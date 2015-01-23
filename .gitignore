@@ -1,3 +1,5 @@
 */grading/*
 *.swp
 *.o
+*.cc
+1/lexer

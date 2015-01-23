@@ -89,6 +89,7 @@ Z               [Zz]
 
 
 %x COMMENT
+%x COMMENTLINE
 %x STRING
 %option stack
 %%
@@ -97,12 +98,11 @@ Z               [Zz]
   *  Nested comments
   */
 
---.*<<EOF>>             {
-    BEGIN(INITIAL);
-    cool_yylval.error_msg = "EOF in comment";
-    return (ERROR);
-}
---.*                    ;
+<COMMENTLINE>\n         { curr_lineno++; yy_pop_state(); }
+<COMMENTLINE><<EOF>>    { yy_pop_state(); }
+<COMMENTLINE>.          ;
+<INITIAL>--             { yy_push_state(COMMENTLINE); }
+
 <COMMENT>\(\*           { yy_push_state(COMMENT); }
 <COMMENT>\*\)           { yy_pop_state(); }
 <COMMENT><<EOF>>        {
@@ -112,7 +112,6 @@ Z               [Zz]
 }
 <COMMENT>\n             { curr_lineno++; }
 <COMMENT>.              ;
-
 <INITIAL>\(\*           { yy_push_state(COMMENT); }
 <INITIAL>\*\)           {
     cool_yylval.error_msg = "Unmatched *)";
