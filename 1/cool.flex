@@ -53,7 +53,7 @@ DARROW          =>
 ASSIGNMENT      <-
 LESSEQUAL       <=
 MONOCHAROP      [\+\-\*\/\=\(\)\:\;\{\}\.\,\@\<\~]
-WHITESPACE      [\ \t\r\n]
+WHITESPACE      [\ \t\r\n\f\v]
 DIGIT           [0-9]
 ALPHA           [a-zA-Z]
 UPPERCASE       [A-Z]
@@ -98,11 +98,11 @@ Z               [Zz]
   */
 
 --.*<<EOF>>             {
-    cool_yylval.error_msg = "EOF in single-line comment"
+    BEGIN(INITIAL);
+    cool_yylval.error_msg = "EOF in comment";
     return (ERROR);
 }
---.*$                   ;
-
+--.*                    ;
 <COMMENT>\(\*           { yy_push_state(COMMENT); }
 <COMMENT>\*\)           { yy_pop_state(); }
 <COMMENT><<EOF>>        {
@@ -192,14 +192,15 @@ f{A}{L}{S}{E}           {
     yy_push_state(STRING);
     string_buf_ptr = &string_buf[0];
 }
-<STRING>\\\n            ;
 <STRING>\\b             { *(string_buf_ptr++) = '\b'; }
 <STRING>\\t             { *(string_buf_ptr++) = '\t'; }
+<STRING>\\\n            { *(string_buf_ptr++) = '\n'; }
 <STRING>\\n             { *(string_buf_ptr++) = '\n'; }
 <STRING>\\f             { *(string_buf_ptr++) = '\f'; }
-<STRING>\\\"            { *(string_buf_ptr++) = '\"'; }
+<STRING>\\\"            { *(string_buf_ptr++) = '"'; }
 <STRING>\\\0            {
-    cool_yylval.error_msg = "Escaped null character in string literal";
+    BEGIN(INITIAL);
+    cool_yylval.error_msg = "Escaped null character in string constant";
     return (ERROR);
 }
 <STRING>\\.             { *(string_buf_ptr++) = yytext[1]; }
@@ -209,19 +210,27 @@ f{A}{L}{S}{E}           {
     cool_yylval.symbol = stringtable.add_string(string_buf);
     return (STR_CONST);
 }
+<STRING>\n             {
+    BEGIN(INITIAL);
+    cool_yylval.error_msg = "Newline character in string constant";
+    return (ERROR);
+}
 <STRING>\0             {
-    cool_yylval.error_msg = "Null character in string literal";
+    BEGIN(INITIAL);
+
+    cool_yylval.error_msg = "Unescaped null character in string constant";
+    return (ERROR);
+}
+<STRING><<EOF>>         {
+    BEGIN(INITIAL);
+    cool_yylval.error_msg = "EOF in string constant";
     return (ERROR);
 }
 <STRING>.               { *(string_buf_ptr++) = yytext[0]; }
-<STRING><<EOF>>         {
-    BEGIN(INITIAL);
-    cool_yylval.error_msg = "EOF in string literal";
-    return (ERROR);
-}
 
  /* Catch-all error case */
 .                       {
+    BEGIN(INITIAL);
     cool_yylval.error_msg = yytext;
     return(ERROR);
 }
