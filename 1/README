@@ -1,6 +1,9 @@
 README file for Programming Assignment 2 (C++ edition)
 =====================================================
 
+## TODO
+- [ ] Limit string length to max 1024 characters.
+
 Your directory should now contain the following files:
 
  Makefile        -> [course dir]/src/PA2/Makefile
