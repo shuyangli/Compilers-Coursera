@@ -3,3 +3,6 @@
 *.o
 *.cc
 1/lexer
+2/myparser
+2/mycoolc
+
