@@ -148,6 +148,9 @@
     %type <expression> expr_op_unary
     
     /* Precedence declarations go here. */
+    %left '<' '=' LE
+    %left '+' '-'
+    %left '*' '/'
     
     
     %%
