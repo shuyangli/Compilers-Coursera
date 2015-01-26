@@ -149,9 +149,10 @@
     %type <expression> expr_op_unary
     
     /* Precedence declarations go here. */
-    %left '<' '=' LE
     %left '+' '-'
     %left '*' '/'
+    %right ISVOID ASSIGN '~' NOT
+    %nonassoc '<' '=' LE
     
     
     %%
@@ -219,9 +220,7 @@
     ;
 
     expr_list_semicolon
-    :
-        { $$ = no_expr(); }
-    | expr ';'
+    : expr ';'
         { $$ = single_Expressions($1); }
     | expr_list_semicolon expr ';'
         { $$ = append_Expressions($1, single_Expressions($2)); }
