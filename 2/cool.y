@@ -149,10 +149,13 @@
     %type <expression> expr_op_unary
     
     /* Precedence declarations go here. */
+    %right ASSIGN
+    %right NOT
+    %nonassoc '<' '=' LE
     %left '+' '-'
     %left '*' '/'
-    %right ISVOID ASSIGN '~' NOT
-    %nonassoc '<' '=' LE
+    %right ISVOID
+    %right '~'
     
     
     %%
