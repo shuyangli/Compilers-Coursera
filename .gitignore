@@ -5,4 +5,7 @@
 1/lexer
 2/myparser
 2/mycoolc
-
+2/cgen
+2/lexer
+2/parser
+2/semant
