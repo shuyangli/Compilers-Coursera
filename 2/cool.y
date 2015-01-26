@@ -169,6 +169,8 @@
     | class_list class	/* several classes */
         { $$ = append_Classes($1,single_Classes($2)); 
         parse_results = $$; }
+    | error class_list
+        { $$ = $2; }
     ;
     
     /* If no parent is specified, the class inherits from the Object class. */
@@ -188,6 +190,8 @@
         { $$ = append_Features($1, single_Features($2)); }
     |
         { $$ = nil_Features(); }
+    | error feature_list
+        { $$ = $2; }
     ;
 
     feature
@@ -218,6 +222,8 @@
         { $$ = single_Expressions($1); }
     | expr_list_semicolon expr ';'
         { $$ = append_Expressions($1, single_Expressions($2)); }
+    | error expr_list_semicolon
+        { $$ = $2; }
     ;
 
     expr_list_comma
@@ -308,6 +314,8 @@
         { $$ = let($1, $3, no_expr(), $5); }
     | OBJECTID ':' TYPEID ASSIGN expr ',' expr_let
         { $$ = let($1, $3, $5, $7); }
+    | error expr_let
+        { $$ = $2; }
     ;
 
     case_list
@@ -317,6 +325,8 @@
         { $$ = append_Cases($1, single_Cases($2)); }
     |
         { $$ = nil_Cases(); }
+    | error case_list
+        { $$ = $2; }
     ;
     
     case
