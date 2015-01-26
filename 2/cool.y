@@ -219,7 +219,9 @@
     ;
 
     expr_list_semicolon
-    : expr ';'
+    :
+        { $$ = no_expr(); }
+    | expr ';'
         { $$ = single_Expressions($1); }
     | expr_list_semicolon expr ';'
         { $$ = append_Expressions($1, single_Expressions($2)); }
@@ -334,7 +336,7 @@
     | error case_list
         { $$ = $2; }
     ;
-    
+
     case
     : OBJECTID ':' TYPEID DARROW expr
         { $$ = branch($1, $3, $5); }
