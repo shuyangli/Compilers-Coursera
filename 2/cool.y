@@ -142,6 +142,7 @@
     %type <expressions> expr_list_semicolon
     %type <expressions> expr_list_comma
     %type <expression> expr
+    %type <expression> expr_valid_empty
     %type <expression> expr_let
     %type <expression> expr_op_arithmetic
     %type <expression> expr_op_comparison
@@ -236,9 +237,7 @@
     ;
 
     expr
-    :
-        { $$ = no_expr(); }
-    | OBJECTID ASSIGN expr
+    : OBJECTID ASSIGN expr
         { $$ = assign($1, $3); }
     | expr '@' TYPEID '.' OBJECTID '(' expr_list_comma ')'
         { $$ = static_dispatch($1, $3, $5, $7); }
@@ -276,6 +275,13 @@
         { $$ = int_const($1); }
     | BOOL_CONST
         { $$ = bool_const($1); }
+    ;
+
+    expr_valid_empty
+    : expr
+        { $$ = $1; }
+    |
+        { $$ = no_expr(); }
     ;
 
     expr_op_arithmetic
